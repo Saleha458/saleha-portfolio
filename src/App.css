@@ -1,0 +1,600 @@
+#root {
+  min-height: 100vh;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-x: clip;
+}
+
+.app-shell {
+  min-height: 100vh;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  overflow-x: clip;
+}
+
+/* =========================================================
+   GLOBAL THEME TRANSITIONS
+========================================================= */
+
+body,
+nav,
+header,
+main,
+section,
+footer,
+aside,
+article,
+button,
+a,
+input,
+textarea,
+select {
+  transition-property:
+    background-color,
+    border-color,
+    color,
+    fill,
+    stroke,
+    box-shadow;
+
+  transition-duration: 200ms;
+  transition-timing-function: ease;
+}
+
+/*
+ * Intentionally do not apply the transition
+ * to every div.
+ *
+ * It adds unnecessary work to large React pages
+ * and can interfere with animated components.
+ */
+
+/* =========================================================
+   LIGHT THEME COMPATIBILITY
+========================================================= */
+
+html.light body {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* Main backgrounds */
+
+html.light .bg-slate-950 {
+  background-color:
+    #f8fafc !important;
+}
+
+html.light .bg-slate-950\/50 {
+  background-color:
+    rgba(
+      248,
+      250,
+      252,
+      0.8
+    ) !important;
+}
+
+html.light .bg-slate-900 {
+  background-color:
+    #ffffff !important;
+}
+
+html.light .bg-slate-900\/50 {
+  background-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.88
+    ) !important;
+}
+
+html.light .bg-slate-900\/80 {
+  background-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.94
+    ) !important;
+}
+
+html.light .bg-white\/5 {
+  background-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.035
+    ) !important;
+}
+
+html.light .bg-white\/10 {
+  background-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.07
+    ) !important;
+}
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+html.light .text-white {
+  color:
+    #0f172a !important;
+}
+
+html.light .text-slate-100 {
+  color:
+    #0f172a !important;
+}
+
+html.light .text-slate-200 {
+  color:
+    #1e293b !important;
+}
+
+html.light .text-slate-300 {
+  color:
+    #334155 !important;
+}
+
+html.light .text-slate-400 {
+  color:
+    #64748b !important;
+}
+
+html.light .text-slate-500 {
+  color:
+    #64748b !important;
+}
+
+/* =========================================================
+   BORDERS
+========================================================= */
+
+html.light .border-white\/5 {
+  border-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.06
+    ) !important;
+}
+
+html.light .border-white\/10 {
+  border-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.1
+    ) !important;
+}
+
+html.light .border-white\/20 {
+  border-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.16
+    ) !important;
+}
+
+/* =========================================================
+   HOVER STATES
+========================================================= */
+
+html.light
+  .hover\:bg-white\/5:hover {
+  background-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.04
+    ) !important;
+}
+
+html.light
+  .hover\:bg-white\/10:hover {
+  background-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.08
+    ) !important;
+}
+
+html.light
+  .hover\:text-white:hover {
+  color:
+    #0f172a !important;
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+html.light input,
+html.light textarea,
+html.light select {
+  color: #0f172a;
+}
+
+html.light
+  input::placeholder,
+html.light
+  textarea::placeholder {
+  color: #94a3b8;
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+html.light .portfolio-card {
+  background-color: #ffffff;
+
+  border-color: #e2e8f0;
+
+  box-shadow:
+    0 1px 2px
+      rgba(
+        15,
+        23,
+        42,
+        0.04
+      ),
+    0 8px 24px
+      rgba(
+        15,
+        23,
+        42,
+        0.05
+      );
+}
+
+.portfolio-card {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  border-radius: 1rem;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.1
+    );
+
+  background-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.05
+    );
+}
+
+/* =========================================================
+   GLASS PANEL
+========================================================= */
+
+.glass-panel {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.1
+    );
+
+  background-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.75
+    );
+
+  backdrop-filter:
+    blur(18px);
+
+  -webkit-backdrop-filter:
+    blur(18px);
+}
+
+html.light .glass-panel {
+  border-color:
+    rgba(
+      15,
+      23,
+      42,
+      0.1
+    );
+
+  background-color:
+    rgba(
+      255,
+      255,
+      255,
+      0.84
+    );
+}
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes portfolio-fade-up {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(
+        20px
+      );
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(
+        0
+      );
+  }
+}
+
+@keyframes portfolio-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes portfolio-scale-in {
+  from {
+    opacity: 0;
+
+    transform:
+      scale(
+        0.97
+      );
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      scale(
+        1
+      );
+  }
+}
+
+@keyframes portfolio-float {
+  0%,
+  100% {
+    transform:
+      translateY(
+        0
+      );
+  }
+
+  50% {
+    transform:
+      translateY(
+        -7px
+      );
+  }
+}
+
+@keyframes portfolio-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.65;
+  }
+}
+
+.animate-portfolio-fade-up {
+  animation:
+    portfolio-fade-up
+    650ms
+    ease-out
+    both;
+}
+
+.animate-portfolio-fade-in {
+  animation:
+    portfolio-fade-in
+    500ms
+    ease-out
+    both;
+}
+
+.animate-portfolio-scale-in {
+  animation:
+    portfolio-scale-in
+    400ms
+    ease-out
+    both;
+}
+
+.animate-portfolio-float {
+  animation:
+    portfolio-float
+    4s
+    ease-in-out
+    infinite;
+}
+
+.animate-portfolio-pulse {
+  animation:
+    portfolio-pulse
+    1.8s
+    ease-in-out
+    infinite;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+
+  border:
+    3px solid
+    rgba(
+      129,
+      140,
+      248,
+      0.2
+    );
+
+  border-top-color:
+    #818cf8;
+
+  border-radius:
+    9999px;
+
+  animation:
+    loading-spin
+    700ms
+    linear
+    infinite;
+}
+
+@keyframes loading-spin {
+  to {
+    transform:
+      rotate(
+        360deg
+      );
+  }
+}
+
+/* =========================================================
+   RESPONSIVE / OVERFLOW SAFETY
+========================================================= */
+
+main,
+section,
+article,
+aside,
+header,
+footer,
+nav {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+}
+
+iframe {
+  border: 0;
+}
+
+pre,
+code {
+  max-width: 100%;
+}
+
+.break-safe {
+  overflow-wrap:
+    anywhere;
+
+  word-break:
+    normal;
+}
+
+.responsive-container {
+  width: 100%;
+  max-width: 80rem;
+
+  min-width: 0;
+
+  margin-inline: auto;
+
+  padding-inline: 1rem;
+}
+
+@media (
+  min-width: 640px
+) {
+  .responsive-container {
+    padding-inline:
+      1.5rem;
+  }
+}
+
+@media (
+  min-width: 1024px
+) {
+  .responsive-container {
+    padding-inline:
+      2rem;
+  }
+}
+
+/* =========================================================
+   ACCESSIBILITY
+========================================================= */
+
+@media (
+  prefers-reduced-motion:
+    reduce
+) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior:
+      auto !important;
+
+    animation-duration:
+      0.01ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      0.01ms !important;
+  }
+}
