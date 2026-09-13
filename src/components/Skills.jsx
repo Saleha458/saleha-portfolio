@@ -1,142 +1,336 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
-import { motion } from "framer-motion";
+import {
+  motion,
+} from "framer-motion";
 
-import { getSkills } from "../services/skillService";
+import {
+  getSkills,
+} from "../services/skillService";
+
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
 
+/* =========================================================
+   CATEGORY ORDER
+========================================================= */
+
 const categoryOrder = {
-  web: 1,
   frontend: 1,
-  backend: 1,
-  "web development": 1,
 
-  mobile: 2,
-  app: 2,
-  "mobile development": 2,
-  "app development": 2,
+  backend: 2,
 
-  database: 3,
-  databases: 3,
+  "mobile development": 3,
+  mobile: 3,
 
-  ai: 4,
-  "ai & machine learning": 4,
-  "ai & ml": 4,
-  "artificial intelligence": 4,
-  "machine learning": 4,
+  "databases & cloud": 4,
+  databases: 4,
+  database: 4,
+  cloud: 4,
 
-  testing: 5,
-  tools: 6,
+  "ai & data": 5,
+  "ai & machine learning": 5,
+  ai: 5,
+  "machine learning": 5,
+
+  "programming languages": 6,
+
+  "tools & workflow": 7,
+  "tools & platforms": 7,
+  tools: 7,
 };
 
-function getCategoryRank(category) {
-  if (!category) return 99;
-
-  const normalized = String(category)
-    .toLowerCase()
-    .trim();
-
-  if (categoryOrder[normalized] !== undefined) {
-    return categoryOrder[normalized];
+function getCategoryRank(
+  category
+) {
+  if (!category) {
+    return 99;
   }
 
-  if (
-    normalized.includes("web") ||
-    normalized.includes("frontend") ||
-    normalized.includes("backend")
-  ) {
-    return 1;
-  }
+  const normalized =
+    String(category)
+      .toLowerCase()
+      .trim();
 
-  if (
-    normalized.includes("mobile") ||
-    normalized.includes("app")
-  ) {
-    return 2;
-  }
-
-  if (
-    normalized.includes("database") ||
-    normalized.includes("db")
-  ) {
-    return 3;
-  }
-
-  if (
-    normalized.includes("artificial") ||
-    normalized.includes("machine") ||
-    normalized.includes("generative") ||
-    normalized.includes("ai")
-  ) {
-    return 4;
-  }
-
-  if (normalized.includes("test")) {
-    return 5;
-  }
-
-  if (normalized.includes("tool")) {
-    return 6;
-  }
-
-  return 99;
+  return (
+    categoryOrder[
+      normalized
+    ] || 99
+  );
 }
 
+/* =========================================================
+   NORMALIZE CATEGORY
+========================================================= */
+
+function normalizeCategory(
+  category
+) {
+  const value =
+    String(
+      category || ""
+    )
+      .toLowerCase()
+      .trim();
+
+  if (
+    value.includes(
+      "frontend"
+    ) ||
+    value === "web" ||
+    value.includes(
+      "web development"
+    )
+  ) {
+    return "Frontend";
+  }
+
+  if (
+    value.includes(
+      "backend"
+    )
+  ) {
+    return "Backend";
+  }
+
+  if (
+    value.includes(
+      "mobile"
+    ) ||
+    value.includes(
+      "app development"
+    )
+  ) {
+    return "Mobile Development";
+  }
+
+  if (
+    value.includes(
+      "database"
+    ) ||
+    value.includes(
+      "cloud"
+    )
+  ) {
+    return "Databases & Cloud";
+  }
+
+  if (
+    value.includes("ai") ||
+    value.includes(
+      "machine"
+    ) ||
+    value.includes(
+      "data"
+    )
+  ) {
+    return "AI & Data";
+  }
+
+  if (
+    value.includes(
+      "programming"
+    )
+  ) {
+    return "Programming Languages";
+  }
+
+  if (
+    value.includes(
+      "tool"
+    ) ||
+    value.includes(
+      "devops"
+    )
+  ) {
+    return "Tools & Workflow";
+  }
+
+  return (
+    category ||
+    "Other"
+  );
+}
+
+/* =========================================================
+   SKILLS
+========================================================= */
+
 function Skills() {
-  const [skills, setSkills] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [skills, setSkills] =
+    useState([]);
 
-  const loadSkills = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError("");
+  const [loading, setLoading] =
+    useState(true);
 
-      const data = await getSkills();
+  const [error, setError] =
+    useState("");
 
-      const safeData = Array.isArray(data)
-        ? data
-        : [];
+  /* =======================================================
+     LOAD
+  ======================================================= */
 
-      const sortedSkills = [...safeData].sort(
-        (a, b) => {
-          const featuredA = a.featured === true;
-          const featuredB = b.featured === true;
+  const loadSkills =
+    useCallback(
+      async () => {
+        try {
+          setLoading(true);
+          setError("");
 
-          if (featuredA !== featuredB) {
-            return featuredA ? -1 : 1;
-          }
+          const data =
+            await getSkills();
 
-          return (
-            getCategoryRank(a.category) -
-            getCategoryRank(b.category)
+          setSkills(
+            Array.isArray(
+              data
+            )
+              ? data
+              : []
+          );
+        } catch (
+          loadError
+        ) {
+          console.error(
+            "Failed to load skills:",
+            loadError
+          );
+
+          setError(
+            "Skills could not be loaded right now."
+          );
+        } finally {
+          setLoading(
+            false
           );
         }
-      );
-
-      setSkills(sortedSkills);
-    } catch (loadError) {
-      console.error(
-        "Failed to load skills:",
-        loadError
-      );
-
-      setError(
-        "Skills could not be loaded right now."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      },
+      []
+    );
 
   useEffect(() => {
     loadSkills();
   }, [loadSkills]);
+
+  /* =======================================================
+     GROUP INTO STACKS
+  ======================================================= */
+
+  const stacks =
+    useMemo(() => {
+      const groups = {};
+
+      skills.forEach(
+        (skill) => {
+          const name =
+            String(
+              skill.name ||
+                skill.title ||
+                ""
+            ).trim();
+
+          if (!name) {
+            return;
+          }
+
+          const category =
+            normalizeCategory(
+              skill.category
+            );
+
+          if (
+            !groups[
+              category
+            ]
+          ) {
+            groups[
+              category
+            ] = [];
+          }
+
+          const exists =
+            groups[
+              category
+            ].some(
+              (
+                item
+              ) =>
+                String(
+                  item.name
+                ).toLowerCase() ===
+                name.toLowerCase()
+            );
+
+          if (!exists) {
+            groups[
+              category
+            ].push({
+              ...skill,
+              name,
+            });
+          }
+        }
+      );
+
+      return Object.entries(
+        groups
+      )
+        .map(
+          ([
+            category,
+            items,
+          ]) => ({
+            category,
+
+            items: [
+              ...items,
+            ].sort(
+              (a, b) => {
+                const featuredA =
+                  a.featured
+                    ? 1
+                    : 0;
+
+                const featuredB =
+                  b.featured
+                    ? 1
+                    : 0;
+
+                if (
+                  featuredA !==
+                  featuredB
+                ) {
+                  return (
+                    featuredB -
+                    featuredA
+                  );
+                }
+
+                return a.name.localeCompare(
+                  b.name
+                );
+              }
+            ),
+          })
+        )
+        .sort(
+          (a, b) =>
+            getCategoryRank(
+              a.category
+            ) -
+            getCategoryRank(
+              b.category
+            )
+        );
+    }, [skills]);
+
+  /* =======================================================
+     LOADING
+  ======================================================= */
 
   if (loading) {
     return (
@@ -145,11 +339,15 @@ function Skills() {
         className="flex min-h-[70vh] items-center justify-center bg-slate-50 px-4 py-20 dark:bg-slate-900"
       >
         <div className="w-full max-w-lg">
-          <LoadingState message="Loading skills..." />
+          <LoadingState message="Loading technologies..." />
         </div>
       </section>
     );
   }
+
+  /* =======================================================
+     UI
+  ======================================================= */
 
   return (
     <section
@@ -157,59 +355,78 @@ function Skills() {
       className="scroll-mt-24 bg-slate-50 px-4 py-20 text-slate-900 dark:bg-slate-900 dark:text-white sm:px-6 sm:py-24 lg:px-8"
     >
       <div className="mx-auto max-w-6xl">
+        {/* HEADER */}
+
         <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.55 }}
+          initial={{
+            opacity: 0,
+            y: 18,
+          }}
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+          }}
+          transition={{
+            duration: 0.55,
+          }}
           className="mb-12 text-center"
         >
           <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
-            Skills & Technologies
+            Tech Stack
           </h2>
 
           <div className="mx-auto mt-5 h-px w-16 bg-indigo-500" />
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-slate-600 dark:text-slate-400 sm:text-lg">
-            Technologies and tools I use to build modern,
-            scalable and user-focused applications.
+            Technologies and tools
+            I work with to build
+            modern, scalable and
+            user-focused
+            applications.
           </p>
         </motion.div>
+
+        {/* ERROR */}
 
         {error && (
           <div className="mb-8">
             <ErrorState
-              title="Unable to load skills"
+              title="Unable to load technologies"
               message={error}
-              onRetry={loadSkills}
+              onRetry={
+                loadSkills
+              }
             />
           </div>
         )}
 
-        {!error && skills.length === 0 ? (
+        {/* EMPTY */}
+
+        {!error &&
+        stacks.length ===
+          0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-800">
             <p className="text-slate-500 dark:text-slate-400">
-              Skills will be displayed here soon.
+              Technologies will
+              be displayed here
+              soon.
             </p>
           </div>
         ) : (
           !error && (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {skills.map((skill, index) => {
-                const isFeatured =
-                  skill.featured === true;
-
-                const proficiency =
-                  skill.proficiency ||
-                  skill.level ||
-                  "";
-
-                const experience =
-                  skill.experience || "";
-
-                return (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {stacks.map(
+                (
+                  stack,
+                  index
+                ) => (
                   <motion.article
-                    key={skill.id}
+                    key={
+                      stack.category
+                    }
                     initial={{
                       opacity: 0,
                       y: 20,
@@ -220,70 +437,58 @@ function Skills() {
                     }}
                     viewport={{
                       once: true,
-                      amount: 0.15,
+                      amount:
+                        0.15,
                     }}
                     transition={{
-                      duration: 0.42,
-                      delay: Math.min(
-                        index * 0.035,
-                        0.2
-                      ),
+                      duration:
+                        0.42,
+
+                      delay:
+                        Math.min(
+                          index *
+                            0.04,
+                          0.2
+                        ),
                     }}
-                    className={`relative rounded-2xl border p-6 transition duration-300 hover:-translate-y-1 ${
-                      isFeatured
-                        ? "border-indigo-200 bg-white shadow-md shadow-indigo-100/70 dark:border-indigo-500/30 dark:bg-slate-800 dark:shadow-none"
-                        : "border-slate-200 bg-white shadow-sm hover:border-indigo-200 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-indigo-500/30"
-                    }`}
+                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-800 dark:shadow-none dark:hover:border-indigo-500/30"
                   >
-                    {isFeatured && (
-                      <span className="absolute right-4 top-4 rounded-full bg-indigo-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400">
-                        Featured
-                      </span>
-                    )}
+                    {/* STACK TITLE */}
 
-                    <h3 className="pr-20 text-xl font-semibold text-slate-900 dark:text-white">
-                      {skill.name ||
-                        skill.title ||
-                        "Skill"}
-                    </h3>
+                    <div className="mb-5">
+                      <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                        {
+                          stack.category
+                        }
+                      </h3>
 
-                    {skill.category && (
-                      <p className="mt-2 text-sm font-medium text-indigo-600 dark:text-indigo-400">
-                        {skill.category}
-                      </p>
-                    )}
+                      <div className="mt-3 h-px w-10 bg-indigo-500" />
+                    </div>
 
-                    {skill.description && (
-                      <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                        {skill.description}
-                      </p>
-                    )}
+                    {/* TECHNOLOGIES */}
 
-                    {proficiency && (
-                      <div className="mt-5 border-t border-slate-100 pt-4 dark:border-slate-700">
-                        <div className="flex items-center justify-between gap-3">
-                          <span className="text-xs text-slate-500">
-                            Proficiency
+                    <div className="flex flex-wrap gap-2.5">
+                      {stack.items.map(
+                        (
+                          skill
+                        ) => (
+                          <span
+                            key={
+                              skill.id ||
+                              `${stack.category}-${skill.name}`
+                            }
+                            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-indigo-500/30 dark:hover:text-indigo-400"
+                          >
+                            {
+                              skill.name
+                            }
                           </span>
-
-                          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                            {proficiency}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {experience && (
-                      <p className="mt-3 text-xs text-slate-500">
-                        Experience:{" "}
-                        <span className="text-slate-600 dark:text-slate-400">
-                          {experience}
-                        </span>
-                      </p>
-                    )}
+                        )
+                      )}
+                    </div>
                   </motion.article>
-                );
-              })}
+                )
+              )}
             </div>
           )
         )}

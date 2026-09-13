@@ -1,368 +1,234 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import {
   addSkill,
   updateSkill,
 } from "../services/skillService";
 
+/* =========================================================
+   DEFAULT DATA
+========================================================= */
+
 const emptySkill = {
   name: "",
   category: "Frontend",
-  proficiency: "Intermediate",
-  experience: "1",
   featured: false,
 };
 
-const skillOptions = {
-  "Programming Languages": [
-    "JavaScript",
-    "TypeScript",
-    "Python",
-    "Java",
-    "C",
-    "C++",
-    "C#",
-    "Go",
-    "Rust",
-    "PHP",
-    "Ruby",
-    "Kotlin",
-    "Swift",
-    "Dart",
-    "R",
-    "MATLAB",
-    "Scala",
-    "Perl",
-    "Lua",
-    "Objective-C",
-    "Shell Scripting",
-    "Bash",
-    "PowerShell",
-  ],
+/*
+ * Keep the list focused on technologies that are relevant
+ * to the portfolio instead of exposing proficiency levels.
+ */
 
+const skillOptions = {
   Frontend: [
+    "React.js",
+    "JavaScript",
     "HTML5",
     "CSS3",
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Next.js",
-    "Vue.js",
-    "Nuxt.js",
-    "Angular",
-    "Svelte",
-    "SvelteKit",
-    "Astro",
-    "jQuery",
-    "Redux",
-    "Redux Toolkit",
-    "Zustand",
-    "React Query",
-    "TanStack Query",
     "Tailwind CSS",
     "Bootstrap",
-    "Material UI",
-    "Chakra UI",
-    "Ant Design",
-    "Sass",
-    "Less",
+    "Responsive Design",
     "Vite",
-    "Webpack",
-    "Babel",
   ],
 
   Backend: [
     "Node.js",
     "Express.js",
-    "NestJS",
-    "Django",
-    "Django REST Framework",
+    "REST APIs",
     "Flask",
-    "FastAPI",
-    "Spring Boot",
-    "Spring",
-    "Laravel",
-    "ASP.NET Core",
-    "Ruby on Rails",
-    "GraphQL",
-    "REST API",
-    "WebSockets",
-    "Socket.IO",
-    "Microservices",
     "API Development",
   ],
 
   "Mobile Development": [
     "Flutter",
-    "React Native",
-    "Android Development",
-    "iOS Development",
-    "Android SDK",
-    "Jetpack Compose",
-    "SwiftUI",
-    "Kotlin Multiplatform",
-    "Ionic",
-    "Expo",
     "Dart",
-    "Swift",
-    "Kotlin",
   ],
 
-  "AI & Machine Learning": [
-    "Artificial Intelligence",
+  "Databases & Cloud": [
+    "MongoDB",
+    "MongoDB Atlas",
+    "Firebase",
+    "Cloud Firestore",
+    "MySQL",
+    "SQLite",
+  ],
+
+  "AI & Data": [
+    "Python",
     "Machine Learning",
-    "Deep Learning",
-    "Generative AI",
-    "Large Language Models",
-    "LLM",
-    "Natural Language Processing",
-    "NLP",
-    "Computer Vision",
-    "Speech Recognition",
-    "Recommendation Systems",
-    "Predictive Analytics",
-    "Reinforcement Learning",
-    "Neural Networks",
-    "Transformers",
-    "RAG",
-    "Prompt Engineering",
-    "AI Agents",
-    "Multi-Agent Systems",
-    "LangChain",
-    "LangGraph",
-    "OpenAI API",
-    "Hugging Face",
-    "TensorFlow",
-    "Keras",
-    "PyTorch",
     "Scikit-learn",
-    "OpenCV",
-    "XGBoost",
     "Pandas",
     "NumPy",
     "Matplotlib",
-    "Plotly",
+    "OpenCV",
   ],
 
-  Databases: [
-    "MongoDB",
-    "MongoDB Atlas",
-    "MySQL",
-    "PostgreSQL",
-    "SQLite",
-    "Oracle Database",
-    "Microsoft SQL Server",
-    "Redis",
-    "Firebase Firestore",
-    "Firebase Realtime Database",
-    "Supabase",
-    "Cassandra",
-    "DynamoDB",
-    "Neo4j",
-    "Elasticsearch",
-    "Database Design",
+  "Programming Languages": [
+    "Java",
+    "JavaScript",
+    "Python",
     "SQL",
-    "NoSQL",
+    "Dart",
   ],
 
-  Cloud: [
-    "AWS",
-    "Amazon EC2",
-    "Amazon S3",
-    "Amazon RDS",
-    "AWS Lambda",
-    "AWS CloudFormation",
-    "Microsoft Azure",
-    "Google Cloud Platform",
-    "Google Cloud",
-    "Firebase",
-    "Vercel",
-    "Netlify",
-    "Heroku",
-    "DigitalOcean",
-    "Cloudflare",
-    "Cloud Functions",
-    "Serverless Architecture",
-  ],
-
-  DevOps: [
+  "Tools & Workflow": [
     "Git",
     "GitHub",
-    "GitLab",
-    "Bitbucket",
-    "Docker",
-    "Docker Compose",
-    "Kubernetes",
-    "Jenkins",
-    "GitHub Actions",
-    "GitLab CI/CD",
-    "CI/CD",
-    "Terraform",
-    "Ansible",
-    "Linux",
-    "Ubuntu",
-    "Nginx",
-    "Apache",
-    "Bash",
-    "DevOps",
-    "Infrastructure as Code",
-    "Monitoring",
-  ],
-
-  Testing: [
-    "Software Testing",
-    "Manual Testing",
-    "Automated Testing",
-    "Unit Testing",
-    "Integration Testing",
-    "System Testing",
-    "End-to-End Testing",
-    "Regression Testing",
-    "Jest",
-    "Vitest",
-    "Cypress",
-    "Playwright",
-    "Selenium",
-    "Postman",
-    "API Testing",
-    "Test-Driven Development",
-    "TDD",
-  ],
-
-  "UI/UX & Design": [
-    "UI Design",
-    "UX Design",
-    "UI/UX Design",
-    "Figma",
-    "Adobe XD",
-    "Adobe Photoshop",
-    "Adobe Illustrator",
-    "Wireframing",
-    "Prototyping",
-    "Design Systems",
-    "Responsive Design",
-    "Accessibility",
-    "User Research",
-    "Interaction Design",
-  ],
-
-  "Cybersecurity": [
-    "Cybersecurity",
-    "Web Security",
-    "Network Security",
-    "Application Security",
-    "Authentication",
-    "Authorization",
-    "OAuth",
-    "JWT",
-    "Encryption",
-    "Penetration Testing",
-    "Ethical Hacking",
-    "OWASP",
-    "Secure Coding",
-    "Identity Management",
-  ],
-
-  "Tools & Platforms": [
     "VS Code",
-    "Visual Studio",
-    "IntelliJ IDEA",
-    "PyCharm",
-    "Jupyter Notebook",
-    "Google Colab",
-    "Postman",
-    "Swagger",
     "npm",
-    "Yarn",
-    "pnpm",
-    "Firebase",
-    "GitHub",
-    "Jira",
-    "Trello",
-    "Notion",
-    "Slack",
-    "Docker",
-  ],
-
-  "Software Engineering": [
-    "Software Architecture",
-    "System Design",
-    "Object-Oriented Programming",
-    "Data Structures",
-    "Algorithms",
-    "Design Patterns",
-    "Clean Code",
-    "SOLID Principles",
-    "Agile",
-    "Scrum",
-    "Software Development Life Cycle",
-    "SDLC",
-    "Version Control",
-    "Code Review",
-    "Technical Documentation",
+    "Postman",
+    "Thunder Client",
+    "Cypress",
+    "Cloudinary",
+    "EmailJS",
   ],
 };
 
 const categories = Object.keys(skillOptions);
 
-function SkillForm({ skill, onSaved, onCancel }) {
-  const [form, setForm] = useState(emptySkill);
-  const [loading, setLoading] = useState(false);
+/* =========================================================
+   SKILL FORM
+========================================================= */
+
+function SkillForm({
+  skill,
+  onSaved,
+  onCancel,
+}) {
+  const [form, setForm] =
+    useState(emptySkill);
+
+  const [loading, setLoading] =
+    useState(false);
 
   useEffect(() => {
     if (skill) {
       setForm({
-        ...emptySkill,
-        ...skill,
+        name:
+          skill.name || "",
+        category:
+          skill.category ||
+          "Frontend",
+        featured:
+          skill.featured === true,
       });
     } else {
       setForm(emptySkill);
     }
   }, [skill]);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  /* =======================================================
+     CHANGE
+  ======================================================= */
+
+  const handleChange = (event) => {
+    const {
+      name,
+      value,
+      type,
+      checked,
+    } = event.target;
+
+    if (name === "category") {
+      setForm((previous) => ({
+        ...previous,
+        category: value,
+        name: "",
+      }));
+
+      return;
+    }
 
     setForm((previous) => ({
       ...previous,
-      [name]: type === "checkbox" ? checked : value,
+
+      [name]:
+        type === "checkbox"
+          ? checked
+          : value,
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  /* =======================================================
+     SUBMIT
+  ======================================================= */
+
+  const handleSubmit = async (
+    event
+  ) => {
+    event.preventDefault();
+
+    if (!form.category) {
+      alert(
+        "Please select a stack."
+      );
+
+      return;
+    }
 
     if (!form.name) {
-      alert("Please select a skill.");
+      alert(
+        "Please select a technology."
+      );
+
       return;
     }
 
     setLoading(true);
 
     try {
+      /*
+       * Only professional portfolio information is saved.
+       *
+       * No proficiency level.
+       * No years of experience.
+       */
+
       const skillData = {
         name: form.name,
-        category: form.category,
-        proficiency: form.proficiency,
-        experience: form.experience,
-        featured: form.featured,
+        category:
+          form.category,
+        featured:
+          form.featured,
       };
 
       if (skill?.id) {
-        await updateSkill(skill.id, skillData);
+        await updateSkill(
+          skill.id,
+          skillData
+        );
       } else {
-        await addSkill(skillData);
+        await addSkill(
+          skillData
+        );
       }
 
-      onSaved();
       setForm(emptySkill);
+
+      if (onSaved) {
+        onSaved();
+      }
     } catch (error) {
-      console.error("Failed to save skill:", error);
-      alert("Failed to save skill.");
+      console.error(
+        "Failed to save skill:",
+        error
+      );
+
+      alert(
+        "Failed to save technology."
+      );
     } finally {
       setLoading(false);
     }
   };
+
+  /* =======================================================
+     UI
+  ======================================================= */
 
   return (
     <form
@@ -370,162 +236,160 @@ function SkillForm({ skill, onSaved, onCancel }) {
       className="rounded-2xl border border-white/10 bg-white/5 p-6"
     >
       {/* HEADER */}
-      <div className="mb-6 flex items-center justify-between">
+
+      <div className="mb-6 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold">
-            {skill ? "Edit Skill" : "Add New Skill"}
+          <h2 className="text-2xl font-bold text-white">
+            {skill
+              ? "Edit Technology"
+              : "Add Technology"}
           </h2>
 
           <p className="mt-1 text-sm text-slate-400">
-            Add a technology, tool or professional skill.
+            Add technologies under
+            their relevant development
+            stack.
           </p>
         </div>
 
-        {skill && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-sm text-slate-400 hover:text-white"
-          >
-            Cancel
-          </button>
-        )}
+        {skill &&
+          onCancel && (
+            <button
+              type="button"
+              onClick={onCancel}
+              className="text-sm text-slate-400 transition hover:text-white"
+            >
+              Cancel
+            </button>
+          )}
       </div>
 
-      <div className="grid gap-5 md:grid-cols-2">
+      {/* FIELDS */}
 
-        {/* CATEGORY */}
+      <div className="grid gap-5 md:grid-cols-2">
+        {/* STACK */}
+
         <div>
-          <label className="mb-2 block text-sm text-slate-300">
-            Category *
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Stack / Category *
           </label>
 
           <select
             name="category"
             value={form.category}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-white/10 bg-slate-950 px-4 py-3 text-white outline-none focus:border-indigo-500"
+            onChange={
+              handleChange
+            }
+            className="w-full rounded-lg border border-white/10 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-indigo-500"
           >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            {categories.map(
+              (category) => (
+                <option
+                  key={category}
+                  value={
+                    category
+                  }
+                >
+                  {category}
+                </option>
+              )
+            )}
           </select>
         </div>
 
-        {/* SKILL */}
+        {/* TECHNOLOGY */}
+
         <div>
-          <label className="mb-2 block text-sm text-slate-300">
-            Skill *
+          <label className="mb-2 block text-sm font-medium text-slate-300">
+            Technology *
           </label>
 
           <select
             name="name"
             value={form.name}
-            onChange={handleChange}
+            onChange={
+              handleChange
+            }
             required
-            className="w-full rounded-lg border border-white/10 bg-slate-950 px-4 py-3 text-white outline-none focus:border-indigo-500"
+            className="w-full rounded-lg border border-white/10 bg-slate-950 px-4 py-3 text-white outline-none transition focus:border-indigo-500"
           >
             <option value="">
-              Select a skill
+              Select a technology
             </option>
 
-            {(skillOptions[form.category] || []).map((skillName) => (
-              <option
-                key={skillName}
-                value={skillName}
-              >
-                {skillName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* PROFICIENCY */}
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">
-            Proficiency *
-          </label>
-
-          <select
-            name="proficiency"
-            value={form.proficiency}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-white/10 bg-slate-950 px-4 py-3 text-white outline-none focus:border-indigo-500"
-          >
-            <option value="Beginner">
-              Beginner
-            </option>
-
-            <option value="Intermediate">
-              Intermediate
-            </option>
-
-            <option value="Advanced">
-              Advanced
-            </option>
-
-            <option value="Expert">
-              Expert
-            </option>
-          </select>
-        </div>
-
-        {/* EXPERIENCE */}
-        <div>
-          <label className="mb-2 block text-sm text-slate-300">
-            Experience
-          </label>
-
-          <select
-            name="experience"
-            value={form.experience}
-            onChange={handleChange}
-            className="w-full rounded-lg border border-white/10 bg-slate-950 px-4 py-3 text-white outline-none focus:border-indigo-500"
-          >
-            <option value="0">Less than 1 year</option>
-            <option value="1">1 year</option>
-            <option value="2">2 years</option>
-            <option value="3">3 years</option>
-            <option value="4">4 years</option>
-            <option value="5">5+ years</option>
-            <option value="6">6+ years</option>
-            <option value="7">7+ years</option>
-            <option value="8">8+ years</option>
-            <option value="9">9+ years</option>
-            <option value="10">10+ years</option>
+            {(
+              skillOptions[
+                form.category
+              ] || []
+            ).map(
+              (
+                technology
+              ) => (
+                <option
+                  key={
+                    technology
+                  }
+                  value={
+                    technology
+                  }
+                >
+                  {
+                    technology
+                  }
+                </option>
+              )
+            )}
           </select>
         </div>
       </div>
 
       {/* FEATURED */}
+
       <label className="mt-6 flex cursor-pointer items-center gap-3">
         <input
           type="checkbox"
           name="featured"
-          checked={form.featured}
-          onChange={handleChange}
+          checked={
+            form.featured
+          }
+          onChange={
+            handleChange
+          }
           className="h-4 w-4 rounded"
         />
 
         <span className="text-sm text-slate-300">
-          Show this skill as a featured skill
+          Prioritize this
+          technology in its
+          stack
         </span>
       </label>
 
-      {/* SUBMIT */}
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-6 rounded-lg bg-indigo-600 px-6 py-3 font-semibold transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {loading
-          ? "Saving..."
-          : skill
-          ? "Update Skill"
-          : "Add Skill"}
-      </button>
+      {/* ACTIONS */}
+
+      <div className="mt-6 flex flex-wrap gap-3">
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded-lg bg-indigo-600 px-6 py-3 font-semibold text-white transition hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading
+            ? "Saving..."
+            : skill
+            ? "Update Technology"
+            : "Add Technology"}
+        </button>
+
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-lg border border-white/10 px-6 py-3 font-semibold text-slate-300 transition hover:bg-white/5 hover:text-white"
+          >
+            Cancel
+          </button>
+        )}
+      </div>
     </form>
   );
 }
