@@ -1,8 +1,4 @@
 User-agent: *
 Allow: /
 
-Disallow: /admin
-Disallow: /dashboard
-Disallow: /admin/dashboard
-
-Sitemap: https://saleha-portfolio-71a0a.web.app/sitemap.xml
+Sitemap: https://saleha-portfolio.vercel.app/sitemap.xml
